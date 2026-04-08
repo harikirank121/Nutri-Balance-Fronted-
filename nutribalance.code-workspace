@@ -1,0 +1,18 @@
+{
+  "folders": [
+    {
+      "name": "Frontend (React)",
+      "path": "."
+    },
+    {
+      "name": "Backend (Spring Boot)",
+      "path": "c:\\studies\\FSW\\Project\\FSAD-Project\\nutribalance-backend"
+    }
+  ],
+  "settings": {
+    "java.project.importOnFirstTimeStartup": "automatic",
+    "css.lint.unknownAtRules": "ignore",
+    "scss.lint.unknownAtRules": "ignore",
+    "less.lint.unknownAtRules": "ignore"
+  }
+}
