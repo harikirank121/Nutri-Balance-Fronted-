@@ -41,7 +41,10 @@ export default function LoginPage() {
                 case ROLES.DOCTOR: navigate('/doctor-dashboard'); break;
                 case ROLES.PARENT: navigate('/parent-dashboard'); break;
                 case ROLES.CHILD: navigate('/child-dashboard'); break;
-                default: setError("Unauthorized Role detected."); break;
+                default: 
+                    logout();
+                    setError("Unauthorized System Role. Contact Administrator."); 
+                    break;
             }
 
         } catch (err) {

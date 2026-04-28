@@ -26,8 +26,11 @@ export default function RegisterPage() {
         if (name === "email" && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
             error = "Invalid email format";
         }
-        if (name === "password" && value && value.length < 6) {
-            error = "Password must be at least 6 characters";
+        if (name === "password") {
+            const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (value && !strongRegex.test(value)) {
+                error = "Password must be at least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char";
+            }
         }
         setErrors(prev => ({ ...prev, [name]: error }));
     };

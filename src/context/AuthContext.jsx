@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
         }
     });
 
-    // ✅ LOGIN FUNCTION
+    //  LOGIN FUNCTION
     const login = (userData) => {
         const permissions = ROLE_PERMISSIONS[userData.role] || [];
         const fullUser = { 

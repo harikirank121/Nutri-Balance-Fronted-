@@ -23,6 +23,7 @@ import TelehealthChatPage from './pages/TelehealthChatPage';
 import EducationHubPage from './pages/EducationHubPage';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminEducationPage from './pages/AdminEducationPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 // Layouts
 import DashboardLayout from './layouts/DashboardLayout';
@@ -76,6 +77,9 @@ function AnimatedRoutes() {
 
           </Route>
         </Route>
+        
+        {/* Catch-All Route for 404 Not Found Page */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </AnimatePresence>
   );

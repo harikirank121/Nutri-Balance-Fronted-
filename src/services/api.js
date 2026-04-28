@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// ✅ CUSTOM AXIOS INSTANCE
+//  CUSTOM AXIOS INSTANCE
 const API = axios.create({
     baseURL: "/api",
     headers: {
@@ -8,7 +8,7 @@ const API = axios.create({
     }
 });
 
-// ✅ ADD REQUEST INTERCEPTOR (Inject JWT Token)
+//  ADD REQUEST INTERCEPTOR (Inject JWT Token)
 API.interceptors.request.use(
     (config) => {
         const user = JSON.parse(localStorage.getItem('user'));
@@ -20,7 +20,7 @@ API.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// ✅ ADD RESPONSE INTERCEPTOR (Global error handling)
+//  ADD RESPONSE INTERCEPTOR (Global error handling)
 API.interceptors.response.use(
     (response) => response,
     (error) => {

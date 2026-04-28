@@ -25,6 +25,10 @@ export default function DietEntryPage() {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [apiError, setApiError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    
+    // Edit state
+    const [editingId, setEditingId] = useState(null);
+    const [editQuantity, setEditQuantity] = useState(1);
 
     // ✅ FETCH existing diet entries on component mount
     useEffect(() => {
@@ -107,6 +111,44 @@ export default function DietEntryPage() {
             setSelectedFood(null);
             setQuantity(1);
             setQuery('');
+        }
+    };
+
+    const handleUpdate = async (id, item) => {
+        if (!userId || editQuantity <= 0) return;
+        
+        try {
+            // Recalculate based on base unit (we assume item object has original base macros, but actually what is stored is total. Let's recalculate based on division by original qty)
+            const baseCals = item.calories / item.qty;
+            const baseProt = item.protein / item.qty;
+            const baseCarbs = item.carbs / item.qty;
+            const baseFats = item.fats / item.qty;
+
+            const updatedData = {
+                foodName: item.name,
+                calories: baseCals * editQuantity,
+                protein: baseProt * editQuantity,
+                carbs: baseCarbs * editQuantity,
+                fats: baseFats * editQuantity,
+                date: new Date().toISOString().split("T")[0]
+            };
+
+            const res = await API.put(`/diet/${userId}/${id}`, updatedData);
+            
+            // Update local state
+            setLog(log.map(entry => entry.id === id ? {
+                ...entry, 
+                qty: editQuantity, 
+                calories: res.data.calories,
+                protein: res.data.protein,
+                carbs: res.data.carbs,
+                fats: res.data.fats,
+                totalCals: res.data.calories
+            } : entry));
+            setEditingId(null);
+        } catch (err) {
+            console.error("Update Error:", err);
+            setApiError('Failed to update entry on server.');
         }
     };
 
@@ -305,12 +347,41 @@ export default function DietEntryPage() {
                                     </div>
                                     <div className="flex items-center gap-6">
                                         <div className="text-right">
-                                            <p className="font-bold text-slate-900">{item.totalCals}</p>
-                                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">kcal</p>
+                                            {editingId === item.id ? (
+                                                <div className="flex items-center gap-2">
+                                                    <input 
+                                                        type="number" 
+                                                        min="1" 
+                                                        value={editQuantity} 
+                                                        onChange={(e) => setEditQuantity(Number(e.target.value))}
+                                                        className="w-16 px-2 py-1 border rounded text-center text-sm"
+                                                    />
+                                                    <button onClick={() => handleUpdate(item.id, item)} className="text-xs bg-emerald-600 text-white px-2 py-1 rounded">Save</button>
+                                                    <button onClick={() => setEditingId(null)} className="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded">Cancel</button>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <p className="font-bold text-slate-900">{item.totalCals}</p>
+                                                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">kcal</p>
+                                                </>
+                                            )}
                                         </div>
+                                        {/* Edit Button */}
+                                        {editingId !== item.id && (
+                                            <button
+                                                onClick={() => { setEditingId(item.id); setEditQuantity(item.qty); }}
+                                                className="p-2 text-slate-400 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors focus:outline-none opacity-0 group-hover:opacity-100"
+                                                title="Edit Entry"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </button>
+                                        )}
                                         <button
                                             onClick={() => handleRemove(item.id)}
                                             className="p-2 text-slate-400 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors focus:outline-none opacity-0 group-hover:opacity-100"
+                                            title="Delete Entry"
                                         >
                                             <Trash2 className="w-5 h-5" />
                                         </button>
